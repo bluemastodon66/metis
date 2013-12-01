@@ -1,0 +1,21 @@
+{% if is_login %}
+<div class='panel panel-success'>
+    <div class="panel-heading">
+        <h3 class="panel-title">Action</h3>
+    </div>
+    <div class='panel-body'>
+        <p>Hi, {{ current_user['display_name'] }} </p>
+
+        {% if is_manager %}
+        <div class="btn-group"><a href="{{ webroot_url("topic/add/") }}" class="btn btn-info">New Post</a>
+        {% end %}
+        {% if is_admin %}
+        <a href="{{ webroot_url("pages/add/") }}" class="btn btn-success">New Page</a></div>
+        {% end %}
+    </div>
+</div>
+<div class='sep10'></div>
+{% end %}
+
+{#{% from handlers.public import topic %}#}
+{#{{  topic.Widget().recentTop }}#}

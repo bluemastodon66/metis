@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en"><!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ web_description }}">
+    <meta name="author" content="{{ web_site_name }}">
+
+    <!-- Bootstrap Stylesheet -->
+
+    <link rel="stylesheet" href="{{ static_url("libs/bootstrap/dist/css/bootstrap.css") }}" media="all">
+
+    <!-- Plugin Stylsheets first to ease overrides -->
+    <!-- End Plugin Stylesheets -->
+
+    <link rel="stylesheet" href="{{ static_url("topic/css/editor.css") }}" media="screen">
+    <script src="{{ static_url("libs/jquery/jquery.min.js") }}"></script>
+    <script src="{{ static_url("libs/bootstrap/dist/js/bootstrap.min.js") }}"></script>
+    <script src="{{ static_url("libs/tinymce/tinymce.min.js") }}"></script>
+
+
+    <!-- Jquery-UI -->
+    <link rel="stylesheet" href="{{ static_url("libs/jquery-ui/css/jquery-ui.min.css") }}" media="screen">
+    <script src="{{ static_url("libs/jquery-ui/js/jquery-ui.min.js") }}"></script>
+
+
+    <!-- Seperated Stylsheets -->
+    {% block headerarea %}{% end %}
+    <!-- End Seperated Stylesheets -->
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="{{ static_url("libs/html5/html5shiv.js") }}"></script>
+<![endif]-->
+    <title>{{ web_title }}:: {{ title }}</title>
+
+
+
+</head>
+<body>
+<style>
+    #contentwrapper{
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+</style>
+<div id="maincontainer">
+    <header class="navbar-inverse bs-docs-nav" role="banner">
+        <div id="banner">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".bs-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ webroot_url("") }}"><img src="{{ static_url("logo.png") }}" alt=""
+                                                      style="width: 158px; height: 22px;"></a>
+            </div>
+            <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class='divider-vertical'></li>
+                    <li class='{% if current_path=="/" %}active{% end %}'><a href="{{ webroot_url("") }}">首頁</a></li>
+                    {% if current_user %}
+                        {% if 'role' in current_user and current_user['role'] == 'admin' %}
+                            <li><a href='{{ webroot_url("admin") }}'>管理</a></li>
+                        {% end %}
+                    <li><a href='{{ webroot_url("client/setting/") }}'>設定</a></li>
+                    <li><a href='{{ webroot_url("auth/logout_process/") }}'>登出 ( {{ current_user['user_login'] }} )</a></li>
+                    {% else %}
+                    <li><a href='{{ webroot_url("auth/register/") }}/auth/register/'>註冊</a></li>
+                    <li><a href='{{ webroot_url("auth/login/") }}'>登入</a></li>
+                    {% end %}
+                </ul>
+                <div class="clear"></div>
+            </nav>
+            <!--/.navbar-collapse -->
+        </div>
+    </header>
+    <div id="contentwrapper">
+        {% block body %}{% end %}
+    </div>
+    <div class="clear"></div>
+    <footer id="footer">
+        <div class='container'>
+            <div class='sep10'></div>
+            <div class='col_fade'>
+                <p>Copyright 2013. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+
+<!-- Seperated Scripts -->
+{% block scriptlist %}{% end %}
+<!-- End Seperated Scripts -->
+</body>
+</html>

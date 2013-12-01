@@ -1,0 +1,166 @@
+{% extends "../admin_layout.html" %}
+
+{% block body %}
+
+<div class="page-header">
+    <h1>Topcs</h1>
+</div>
+
+<div class="bs-callout bs-callout-info">
+    <h4>Description</h4>
+
+    <p>Topics Management System</p>
+
+    <p>Current Topics: <span style="color:#bc0000;">{{ total }}</span></p>
+</div>
+
+
+<div class="page-box">
+    <table>
+        <tr>
+            <td>
+                <ul class="pagination">
+
+                    {% for r in pages %}
+                    {% if r['current'] %}
+                    <li class="active">
+                        <a>{{ r['text'] }}</a>
+                    </li>
+                    {% else %}
+
+                    {% if r['disable'] %}
+                    <li class="disabled">
+                        <a>{{ r['text'] }}</a>
+                    </li>
+                    {% else %}
+
+                    <li>
+                        <a href="{{ webroot_url("admin/topics/?s="+r['value']+"&"+parameter) }}">{{ r['text'] }}</a>
+                    </li>
+                    {% end %}
+
+                    {% end %}
+
+                    {% end %}
+                </ul>
+            </td>
+            <td width="300" nowrap>
+
+                <form class="navbar-form navbar-left" role="search" action="{{ webroot_url("admin/topics/") }}">
+                    <div class="form-group">
+                        <input type="hidden" value="{{ mode }}" name="mod">
+                        <input type="text" class="form-control" placeholder="Search" name="k" value="{{ keyword }}">
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="pull-left">
+<span class="label label-warning {{ 'active' if mode =='normal' else '' }}"><a
+        href="{{ webroot_url("admin/topics/?mod=normal") }}">Normal Post</a></span>
+<span class="label label-danger {{ 'active' if mode =='delete' else '' }}"><a
+        href="{{ webroot_url("admin/topics/?mod=delete") }}">Deleted Post</a></span>
+
+    </div>
+
+<div class="pull-right">
+    <a id="restore-btn" class="btn btn-success" role="button">Restore Post</a>
+    <a id="recycle-btn" class="btn btn-primary" role="button">Recycle Post</a>
+    <a id="delete-btn" class="btn btn-danger" role="button">*Delete Post</a>
+</div>
+<div class="clear"></div>
+<div class="sep10"></div>
+<div class="panel panel-default">
+
+    <!-- Default panel contents -->
+    <div class="panel-heading">Topics</div>
+
+    <!-- Table -->
+    <form id="update-form" action="{{ webroot_url("admin/topics/") }}" method="POST">
+        <input type="hidden" name="action" value=""/>
+        <input type="hidden" name="nextmove" value="{{ parameter }}" />
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="50"><input type="checkbox" id="select-all"/></th>
+                <th>Author</th>
+                <th width="180">Date</th>
+                <th>Title</th>
+                <th width="120" style="text-align: center">Type</th>
+                <th width="120" style="text-align: center">Status</th>
+                <th width="40" style="text-align: center">Del</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for r in posts %}
+
+
+            <tr>
+                <td>
+                    <input type="checkbox" name="post_ids" value="{{ r['ID'] }}"/>
+                </td>
+                <td><a href="{{ webroot_url("admin/topics/?act=user&id="+str(r['user'].ID)) }}">
+                    {{ r['user'].user_login }}</a></td>
+                <td>{{ r['post_date'] }}</td>
+                <td>
+                    <a href="{{ webroot_url("topic/edit/"+str(r['ID'])+"/?nextmove=admin/topics/") }}">
+                        {{ r['post_title'] }}
+                    </a>
+                </td>
+                <td align="center">{{ r['post_status'] }}</td>
+                <td align="center">{{ r['comment_status'] }}</td>
+                <td align="center">{{ 'D' if r['deleted']==1 else '' }}</td>
+
+            </tr>
+
+            {% end %}
+
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+{% end %}
+
+
+{% block scriptlist %}
+<script>
+    (function () {
+        $action = $("#update-form input[name='action']");
+        $("#restore-btn").click(function(){
+            $action.val("derecycle");
+            $("#update-form").submit();
+        });
+        $("#recycle-btn").click(function(){
+            $action.val("recycle");
+            $("#update-form").submit();
+        });
+        $("#delete-btn").click(function(){
+            $action.val("delete");
+            $("#update-form").submit();
+        });
+
+        $("#select-all").click(function () {
+            $this=$(this);
+           if($this.prop("checked"))
+           {
+             $("input[name='post_ids']").each(function() {
+                 $(this).prop("checked", true);
+             });
+           }
+           else
+           {
+             $("input[name='post_ids']").each(function() {
+                 $(this).prop("checked", false);
+             });
+           }
+
+        });
+
+    }());
+</script>
+{% end %}

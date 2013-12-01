@@ -1,0 +1,95 @@
+{% extends "../public_layout.html" %}
+{% block body %}
+<div class='sep20'></div>
+<div class="row">
+
+    <div class="col-md-9">
+
+        <div id='content'>
+
+
+            <!--- topic -->
+            <div class="container">
+            {% module Template("topic/partial_topics.html", posts=posts, showGist=False) %}
+
+            </div>
+            <div class='sep50 clear'></div>
+        </div>
+        <!-- end fake -->
+
+    </div>
+    <div class="col-md-3">
+        <div id='rightside'>
+
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <form role="form" action="{{ webroot_url("topic/") }}" method="GET">
+                        <div class="form-group">
+                            <input type='text' id='q' name='k' class='form-control' placeholder='Search......'
+                                   value=''/>
+                        </div>
+                        <button type="submit" class="btn btn-success">Search</button>
+                    </form>
+                </div>
+            </div>
+            <div class='sep10'></div>
+
+   {% module Template("topic/widget_action.html", current_user=current_user) %}
+
+
+            {% if 'categories' in globals() %}
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class="panel-title">Category</h3>
+                </div>
+                <div class='panel-body'>
+                    <ul class="category">
+                    {% for cat in categories %}
+                        <li>
+                            <span class="badge pull-right bkred">{{ cat['count'] }}</span>
+                            <a href="{{ webroot_url("topic/cat/"+cat['slug']) }}">{{ cat['slug'] }}</a>
+                        </li>
+                    {% end %}
+                    </ul>
+                </div>
+            </div>
+            <div class='sep10'></div>
+            {% end %}
+
+            {% if 'tags' in globals() %}
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class="panel-title">Tags</h3>
+                </div>
+                <div class='panel-body'>
+                    {% for tag in tags %}
+
+                    <a class="cloud-tag" href="{{ webroot_url("topic/tag/"+tag['slug']) }}">
+                    <span class="badge" style="font-size: {{ tag['size'] }}">{{ tag['slug'] }}</span>
+                    </a>
+
+                    {% end %}
+                </div>
+            </div>
+            <div class='sep10'></div>
+            {% end %}
+
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class="panel-title">RSS</h3>
+                </div>
+                <div class='panel-body'>
+                    <a href="{{ webroot_url('rss') }}"><img alt="RSS" src="{{ static_url('images/rss_icon.png') }}"/></a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+{% end %}
+
+
+

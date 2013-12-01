@@ -1,0 +1,69 @@
+<div class="page-box">
+    <table>
+        <tr>
+            <td>
+                <ul class="pagination">
+                    {% if paginate %}
+                    {% for r in paginate %}
+                    {% if r['current'] %}
+                    <li class="active">
+                        <a>{{ r['text'] }}</a>
+                    </li>
+                    {% else %}
+
+                    {% if r['disable'] %}
+                    <li class="disabled">
+                        <a>{{ r['text'] }}</a>
+                    </li>
+                    {% else %}
+
+                    <li>
+                        <a href="{{ webroot_url("admin/replies/?s="+r['value']+"&"+parameter) }}">{{ r['text'] }}</a>
+                    </li>
+                    {% end %}
+
+                    {% end %}
+
+                    {% end %}
+                    {% end %}
+                </ul>
+            </td>
+            <td width="350">
+                <form class="navbar-form navbar-left" role="search" action="{{ webroot_url("admin/media/") }}">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" name="k" value="{{ keyword }}">
+                    </div>
+                    <button type="submit" class="btn btn-default">Search</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="file-list">
+    {% if records %}
+    {% for r in records %}
+    <div>
+        <div>
+            <a href="{{ static_url(r.related_path+r.name) }}" target="_top">
+                <img src="{{ static_url(r.related_path+"thumb-"+r.name) }}" title="{{ r.name }}"/>
+            </a>
+
+            <p>
+                {{ r.name }}<br/>
+                {{ r.resolution }}<br/>
+                {{ r.upload_date }}
+            </p>
+
+            <div class="pull-left">
+                <a href="{{ webroot_url("admin/media/delete/"+str(r.ID)) }}" class="btn btn-danger btn-sm"
+                   role="button">Delete</a>
+            </div>
+            <div class="pull-right">
+                <a href="{{ webroot_url("admin/media/edit/"+str(r.ID)) }}" class="btn btn-primary btn-sm" role="button">Edit</a>
+            </div>
+            <div class="sep10 clear"></div>
+        </div>
+    </div>
+    {% end %}
+    {% end %}
+</div>

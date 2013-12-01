@@ -1,0 +1,109 @@
+{% extends "../public_layout.html" %}
+{% block body %}
+<div class='sep20'></div>
+<div class="row">
+
+    <div class="col-md-9">
+        <ol class="breadcrumb">
+            <li><a href="{{ webroot_url("") }}">Home</a></li>
+            <li><a href="{{ webroot_url("topic") }}">Post List</a></li>
+            <li class="active">Searching By Author</li>
+        </ol>
+
+        <div id='content'>
+            {% module Template("topic/partial_pagination.html", url="topic/user/"+author+"/", pages=pages, parameters = "") %}
+            <!--- topic -->
+            <div class="container">
+                {% module Template("topic/partial_topics.html", posts=posts, showGist=True) %}
+            </div>
+            <div class='sep50'></div>
+        </div>
+        <!-- end fake -->
+
+    </div>
+    <div class="col-md-3">
+        <div id='rightside'>
+
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <form role="form" action="{{ webroot_url("topic/") }}" method="GET">
+                        <div class="form-group">
+                            <input type='text' id='q' name='k' class='form-control' placeholder='Search......'
+                                   value=''/>
+                        </div>
+                        <button type="submit" class="btn btn-success">Search</button>
+                    </form>
+                </div>
+            </div>
+            <div class='sep10'></div>
+
+            {% if 'user' in globals() %}
+            <div class="bs-box bs-box-info">
+                <div>
+                    <span class="glyphicon glyphicon-user"></span>
+                    <span class="text-danger"> {{ user.user_login }}</span>
+                    <span class="label label-danger"> offline</span>
+                </div>
+                <div class="sep5"></div>
+                <div><span class="glyphicon glyphicon-star"></span>
+                    <span class="text-info">{{ user.display_name }}</span>
+                </div>
+                <div class="sep5"></div>
+                <dd><span class="glyphicon glyphicon-pencil"></span> <strong>Posts:</strong> {{ total }} 篇</dd>
+                <dd><span class="glyphicon glyphicon-th"></span> <strong>Joined:</strong> <span
+                        class="text-muted">{{ user.user_registered }}</span></dd>
+            </div>
+            <div class='sep30'></div>
+            {% else %}
+            <div class="bs-box bs-box-danger">
+                <span>author: unknown</span>
+            </div>
+            <div class='sep30'></div>
+            {% end %}
+
+            {% if 'categories' in globals() %}
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class="panel-title">Category</h3>
+                </div>
+                <div class='panel-body'>
+                    <ul class='category'>
+                        {% for cat in categories %}
+                        <li>
+                            <span class="badge pull-right bkred">{{ cat['count'] }}</span>
+                            <a href="{{ webroot_url("topic/cat/"+cat['slug']) }}">{{ cat['slug'] }}</a>
+                        </li>
+                        {% end %}
+                    </ul>
+                </div>
+            </div>
+            <div class='sep10'></div>
+            {% end %}
+            {% if 'tags' in globals() %}
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class="panel-title">Tags</h3>
+                </div>
+                <div class='panel-body'>
+                    {% for tag in tags %}
+                    <a class="cloud-tag" href="{{ webroot_url("topic/tag/"+tag['slug']) }}">
+                        <span class="badge" style="font-size: {{ tag['size'] }}">{{ tag['slug'] }}</span>
+                    </a>
+                    {% end %}
+                </div>
+            </div>
+            <div class='sep10'></div>
+            {% end %}
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+{% end %}
+
+
+

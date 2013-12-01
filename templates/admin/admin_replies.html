@@ -1,0 +1,226 @@
+{% extends "../admin_layout.html" %}
+{% block headerarea %}
+<script src="{{ static_url("libs/tinymce/tinymce.min.js") }}"></script>
+
+{% end %}
+
+{% block body %}
+
+<div class="page-header">
+    <h1>Replies</h1>
+</div>
+
+
+<div class="row">
+<div class="col-md-5">
+    <div class='reply'>
+                {% if error %}
+                <div class="alert alert-warning alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong>Warning!</strong> {{ error }}
+                </div>
+                {% end %}
+                <h3>Form</h3>
+                <form id="reply-form" action="{{ webroot_url("admin/replies/") }}" method="POST">
+                    <input type="hidden" name="act" value="edit" />
+                    <input type="hidden" name="nextmove" value="{{ nextmove }}" />
+                    <input type="hidden" name="commentID" value="{{ uid if uid else '' }}" />
+                <div class="form-group input-group-sm">
+                    {% if editData %}
+                     <input maxlength="100" type="text" id="name" name="reply_author" class='form-control'
+                           placeholder='Name' {{ 'readonly' if hasUser else '' }}  value='{{ editData.user.user_login if hasUser else editData.author }}'/>
+                    {% else %}
+                    <input maxlength="100" type="text" id="name" name="reply_author" class='form-control'
+                           placeholder='Name' value=''/>
+                    {% end %}
+                </div>
+                <div class="form-group input-group-sm">
+                    <input readonly type="text" id="name" name="reply_IP" class='form-control'
+                           placeholder='IP' value='{{ editData.IP if editData else '' }}'/>
+                </div>
+                 <div class="form-group input-group-sm">
+                    <input readonly type="text" id="name" name="reply_agent" class='form-control'
+                           placeholder='Agent' value='{{ editData.agent if editData else '' }}'/>
+                </div>
+                <div class="form-group input-group-sm">
+                    {% if editData %}
+                     <input maxlength="150" {{ 'readonly' if hasUser else '' }} type="text" id="name" name="reply_email" class='form-control'
+                           placeholder='Email' value='{{ editData.user.user_email if hasUser else editData.email }}'/>
+                    {% else %}
+                    <input maxlength="150" type="text" id="name" name="reply_email" class='form-control'
+                           placeholder='Email' value=''/>
+                    {% end %}
+                </div>
+                <div class="form-group input-group-sm">
+                    <input maxlength="150" type="text" id="name" name="reply_url" class='form-control'
+                           placeholder='Personal Url' value='{{ editData.url if editData else '' }}'/>
+                </div>
+                <div class="form-group">
+                <textarea id="reply_content" name="reply_content" style="width:100%;height: 150px;">
+                    {{ editData.content if editData else '' }}
+                </textarea>
+                    </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" {{ '' if editData else 'disabled' }}>Save</button>
+                </div>
+                </form>
+                 <div class='sep50'></div>
+                <!--- replay -->
+            </div>
+
+
+
+</div>
+<div class="col-md-7">
+<div class="page-box pull-left">
+    <table>
+        <tr>
+            <td>
+                <ul class="pagination">
+
+                    {% for r in pages %}
+                    {% if r['current'] %}
+                    <li class="active">
+                        <a>{{ r['text'] }}</a>
+                    </li>
+                    {% else %}
+
+                    {% if r['disable'] %}
+                    <li class="disabled">
+                        <a>{{ r['text'] }}</a>
+                    </li>
+                    {% else %}
+
+                    <li>
+                        <a href="{{ webroot_url("admin/replies/?s="+r['value']+"&"+parameter) }}">{{ r['text'] }}</a>
+                    </li>
+                    {% end %}
+
+                    {% end %}
+
+                    {% end %}
+                </ul>
+            </td>
+            <td width="300">
+                <form class="navbar-form navbar-left" role="search" action="{{ webroot_url("admin/replies/") }}">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" name="k" value="{{ keyword }}">
+                    </div>
+                    <button type="submit" class="btn btn-default">Search</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="pull-right" style="padding-top: 20px;">
+    <a id="delete-btn" class="btn btn-danger" role="button">Delete</a>
+</div>
+<div class="clear"></div>
+<div class="sep10"></div>
+<div class="panel panel-default">
+
+    <!-- Default panel contents -->
+    <div class="panel-heading">Replies <span class="badge bkgreen pull-right">{{ total }}</span></div>
+
+    <!-- Table -->
+    <form id="update-form" action="{{ webroot_url("admin/replies/") }}" method="POST">
+        <input type="hidden" name="act" value="delete"/>
+        <input type="hidden" name="nextmove" value="{{ parameter }}" />
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="50"><input type="checkbox" id="select-all"/></th>
+                <th width="50">#</th>
+                <th>Author</th>
+                <th>Content</th>
+                <th width="120" style="text-align: center">Date</th>
+                <th width="80" style="text-align: center">Post</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for r in records %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="ids" value="{{ r['ID'] }}"/>
+                </td>
+                <td>
+                    <a href="{{ webroot_url("admin/replies/?act=edit&id="+str(r['ID'])) }}">
+                        {{ r['ID'] }}
+                    </a>
+                </td>
+                <td>
+                    {% if r['user'] %}
+                    <a href="{{ webroot_url("admin/topics/?act=user&id="+str(r['user'].ID)) }}">{{ r['user'].user_login }}</a>
+                    {% else %}
+                    {{ r['author'] }}
+                    {% end %}
+                    </td>
+                <td>
+                    <div><a class="comment-title" href="{{ webroot_url("admin/replies/?act=edit&id="+str(r['ID'])) }}">{{ r['summary'][:40] }}...</a></div>
+                </td>
+
+                <td align="center">{{ r['date'] }}</td>
+                <td align="center"><a href="{{ webroot_url("topic/edit/"+str(r['post_id'])+"/?nextmove=admin/replies/") }}">{{ r['post_id'] }}</a></td>
+
+
+            </tr>
+
+            {% end %}
+
+            </tbody>
+        </table>
+    </form>
+</div>
+
+</div>
+</div>
+{% end %}
+
+
+{% block scriptlist %}
+<script>
+    (function () {
+
+        $("#delete-btn").click(function(){
+            $("#update-form").submit();
+        });
+
+        $("#select-all").click(function () {
+            $this=$(this);
+           if($this.prop("checked"))
+           {
+             $("input[name='ids']").each(function() {
+                 $(this).prop("checked", true);
+             });
+           }
+           else
+           {
+             $("input[name='ids']").each(function() {
+                 $(this).prop("checked", false);
+             });
+           }
+
+        });
+
+
+
+        var root="/static/";
+        tinyMCE.init({
+        // General options
+        selector: "#reply_content",
+        mode: "textareas",
+        theme: "modern",
+        plugins: [
+            "autolink link hr"
+        ],
+        menubar: false,
+        toolbar1: "bold italic strikethrough underline superscript subscript | alignleft aligncenter alignright alignjustify",
+        image_advtab: false,
+        content_css: root+'layout.css,'+root+'libs/bootstrap/dist/css/bootstrap.min.css'
+    });
+
+    }());
+</script>
+{% end %}

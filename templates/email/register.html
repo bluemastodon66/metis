@@ -1,0 +1,39 @@
+<p>
+{{ web_title }} Account Management System
+</p>
+<p>
+{{ website_url }}
+</p>
+<p>
+-------------------------------------------------------
+</p>
+<p>
+    Dear {{ login_user }}
+</p>
+<p>
+Thank you for registering the {{ web_title }}.
+This e-mail has been automatically sent by the {{ web_title }} Account Management System.
+</p>
+<p>
+In order to activate your account your need to click this link belows:<br />
+
+ <a href="{{ website_url }}auth/activate/?id={{ activationKey }}">
+    {{ website_url }}auth/activate/?id={{ activationKey }}
+</a>
+</p>
+<p>
+*If clicking on the above URL does not open the page, copy the URL and paste it into your browser's address bar.
+</p>
+<p>
+-------------------------------------------------------
+</p>
+<p>
+For inquiries regarding products and services, please visit the {{ web_title }} Support Center.
+</p>
+<p>
+ {{ website_url }}
+ {{ admin_email }}
+</p>
+<p>
+-------------------------------------------------------
+</p>

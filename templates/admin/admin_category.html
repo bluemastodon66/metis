@@ -1,0 +1,188 @@
+{% extends "../admin_layout.html" %}
+
+{% block body %}
+
+<div class="page-header">
+    <h1>Category</h1>
+</div>
+
+<div class="bs-callout bs-callout-info">
+    <h4>Description</h4>
+    <p>Update/Add Categories</p>
+</div>
+
+<div class="row">
+
+    <div class="col-md-7">
+        {% if error %}
+        <div class="alert alert-warning alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Warning!</strong> {{ error }}
+        </div>
+        {% end %}
+        <form id="update-form" action="{{ webroot_url("admin/categories/") }}" method="POST">
+        <input type="hidden" name="act" value="{{ act }}"/>
+        <input type="hidden" name="nextmove" value="{{ parameters }}"/>
+
+        <input type="hidden" name="id" value="{{ formData['ID'] if formData else '' }}">
+        <div class="panel panel-default panel-danger">
+            <div class="panel-heading">Form</div>
+            <div class="panel-body">
+                <div class="input-group-sm">
+                    <label for="slug">Name</label>
+                    <input maxlength="10" type="text" id="slug" name="slug" class='form-control'
+                           placeholder='Name...' value="{{ formData['slug'] if formData else '' }}"/>
+                </div>
+                <div class="sep10"></div>
+                <div class="input-group-lg">
+                    <label for="description">Description</label>
+                    <input maxlength="200" type="text" id="description" name="description" class='form-control'
+                           placeholder='Description...' value="{{ formData['description'] if formData else '' }}"/>
+                </div>
+                <div class="sep10"></div>
+                <div class="btn-group-sm">
+                    <button id="btn-add" type="button" class="btn btn-success">Add</button>
+                    <button id="btn-save" type="button" class="btn btn-success" {{ '' if formData else 'disabled' }}>Save</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="col-md-5">
+
+        <div class="panel panel-default panel-success">
+            <div class="panel-heading">Category<span class="badge pull-right">{{ totalData }}</span></div>
+            <div class="panel-body" style="padding-bottom: 0px;">
+                <form id="action-form" action="{{ webroot_url("admin/categories/") }}" method="post">
+                    <input name="act" value="delete" type="hidden"/>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th width="50"><input type="checkbox" id="select-all"/></th>
+                        <th>Name</th>
+                        <th width="40" align="right">Count</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in records %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="ids" value="{{ r['ID'] }}"/>
+                        </td>
+                        <td><a href="{{ webroot_url("admin/categories/?act=edit&id="+str(r['ID'])) }}">
+                            {{ r['slug'] }}</a></td>
+                        </td>
+                        <td align="right">{{ r['count'] }}</td>
+                    </tr>
+                    {% end %}
+                    </tbody>
+                </table>
+                </form>
+            </div>
+
+            <div class="page-box" style="padding-left: 13px;margin: 0px;">
+                {% if pages %}
+                <ul class="pagination">
+                                {% for r in pages %}
+                                {% if r['current'] %}
+                                <li class="active">
+                                    <a>{{ r['text'] }}</a>
+                                </li>
+                                {% else %}
+                                {% if r['disable'] %}
+                                <li class="disabled">
+                                    <a>{{ r['text'] }}</a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a href="{{ webroot_url("admin/categories/?s="+r['value']+"&"+parameters) }}">
+                                        {{ r['text'] }}</a>
+                                </li>
+                                {% end %}
+                                {% end %}
+                                {% end %}
+                </ul>
+                {% end %}
+                <table width="100%">
+                    <tr>
+                        <td width="240">
+                            <form method="get" class="navbar-form navbar-left" role="search" style="padding:0px;"
+                                  action="{{ webroot_url("admin/categories/") }}">
+                                <div class="form-group input-group-sm">
+                                    <input type="text" class="form-control" placeholder="Search" name="k"
+                                           value="{{ keyword }}">
+                                </div>
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </form>
+                        </td>
+                        <td style="padding-right: 10px;">
+                            <div class="btn-group-sm pull-right">
+                                <a id="delete-btn" class="btn btn-danger" role="button">*Delete</a>
+                             </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% end %}
+
+
+
+{% block scriptlist %}
+<script>
+    (function () {
+
+
+        function isValid()
+        {
+            var slug = $("#update-form input#slug").val().trim();
+            if(slug =="")
+            {
+                $("#update-form input#slug").focus();
+                return false;
+            }
+            return true;
+
+        }
+        $action = $("#update-form input[name='act']");
+        $("#btn-add").click(function(){
+            $action.val("add");
+            if(isValid()){
+            $("#update-form").submit();
+            }
+        });
+        $("#btn-save").click(function(){
+            $action.val("edit");
+            if(isValid()){
+            $("#update-form").submit();
+            }
+        });
+        $("#delete-btn").click(function(){
+            $("#action-form").submit();
+        });
+
+        $("#select-all").click(function () {
+            $this=$(this);
+           if($this.prop("checked"))
+           {
+             $("input[name='ids']").each(function() {
+                 $(this).prop("checked", true);
+             });
+           }
+           else
+           {
+             $("input[name='ids']").each(function() {
+                 $(this).prop("checked", false);
+             });
+           }
+
+        });
+
+    }());
+</script>
+{% end %}

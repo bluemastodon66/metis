@@ -1,0 +1,228 @@
+{% extends "../../public_layout.html" %}
+{% block headerarea %}
+<link rel="stylesheet" href="{{ static_url("css/client.css") }}" media="screen">
+{% end %}
+
+
+{% block body %}
+
+<div id="resend-a-key-box">
+    <h1>Account is not activated</h1>
+
+    <div class='panel panel-default'>
+
+        <form id='request-form' role='form' method="POST" action="{{ webroot_url("client/resend_activate/") }}">
+            <div class='form-group'>
+                <label class='control-label' for='inputAccount'>Account</label>
+                <input class='form-control' readonly id='inputAccount' name='inputAccount' size='30' type='text' value='{{ user['user_login'] }}'/>
+            </div>
+             <div class='form-group'>
+                <label class='control-label' for='inputDisplayName'>Display Name</label>
+                <input class='form-control'readonly id='inputDisplayName' name='inputDisplayName' size='30' type='text' value='{{ user['display_name'] }}'/>
+            </div>
+
+            <div class='form-group'>
+                <label class='control-label' for='inputEmail'>電子郵箱</label>
+                <input class='form-control' readonly id='inputEmail' name='inputEmail' size='30' type='text' value="{{ user['user_email'] }}"/>
+            </div>
+
+            <div class='form-group'>
+                <label class='control-label' for='inputValid'>Valid Code</label>
+                <table>
+                    <tr>
+                        <td>
+                            <input class='form-control' id='inputValid' placeholder="Valid Code"
+                                   name="inputValidCode" size='30' type='text' value=''/>
+                        </td>
+                        <td>
+                            <a href="#" id="change-valid" title="Change Valid Code">
+                                <img id="valid-img" src="{{ webroot_url("session_captcha/validcode/") }}?_dc={{ rand }}"
+                                     width="80"/>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <p>
+                If you want to change your email, please go to <a href="{{ webroot_url("client/setting/") }}">setting page</a>
+            </p>
+
+            <div class='form-actions'>
+                <input type='submit' class='btn btn-block btn-success' value='Request Activated Key'/>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Modal -->
+  <div class="modal fade" id="msgBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog msg-box">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="msgTitle">Please Wait</h4>
+        </div>
+        <div class="modal-body" id="msgBody">
+
+        </div>
+        <div class="modal-footer">
+          <button id="btn-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+{% end %}
+{% block scriptlist %}
+<!-- Scripts -->
+
+<script>
+    /**
+ * Created with PyCharm.
+ * User: LSJ
+ * Date: 13/10/18
+ * Time: 下午5:58
+ * To change this template use File | Settings | File Templates.
+ */
+
+(function () {
+// bind events //
+    $("#resend-a-key-box #change-valid").click(function (e) {
+        changeValid();
+        return false;
+    });
+    $("#resend-a-key-box #request-form").submit(submit);
+    var valid, emailHasSent = false;
+    function changeValid() {
+        $img = $("img#valid-img");
+        var url = $img.prop("src");
+        var newUrl = url.replace(/\?_dc=[0-9]+/, "");
+        newUrl += "?_dc=" + Math.floor(Math.random() * 10000) + 1;
+        $img.prop("src", newUrl);
+    }
+
+    function submit(e) {
+        $this = $(this);
+        if (checkvalid() == false) {
+            formShake();
+            return false;
+        }
+        $this[0].reset(); // reset form //
+
+        showModelMsg("Please Wait", "Requesting...");
+        var formAction = $this.attr("action");
+        $.ajax({
+            url: formAction, type: 'post', dataType: 'json', data: {
+                'validcode': valid
+            }, async: true, cache: false, success: function (res) {
+                setModelBtn(true);
+                if (res && res.success) {
+                    setMsg("Success", "The New Activated Key has been sent to your Email.");
+                    emailHasSent = true;
+                } else {
+
+                    var msg = "Request Failed!";
+                    if (res && res.msg) {
+                        msg = res.msg;
+                    }
+                    setMsg("Error", msg);
+                    changeValid();
+                }
+            }, error: function (res) {
+                setModelBtn(true);
+                var msg = "Request Failed!";
+                if (res && res.msg) {
+                    msg = res.msg;
+                }
+                setMsg("Error", msg);
+                changeValid();
+            }
+        });
+
+
+        return false;
+    }
+
+
+    function checkvalid() {
+        valid = $("#resend-a-key-box #inputValid").val().trim();
+        if (valid == "") {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function showModelMsg(title, msg) {
+        $("#msgBox").modal({backdrop: false});
+        setModelBtn(false);
+        setMsg(title, msg);
+
+    }
+
+    function hideModelMsg() {
+        $("#msgBox").modal('hide');
+    }
+
+    $('#msgBox').on('hidden.bs.modal', function () {
+        // do something…
+        if (emailHasSent) {
+            location.replace("/");
+        }
+    });
+
+    function setMsg(title, msg) {
+        $("#msgBox #msgTitle").html(title);
+        $("#msgBox #msgBody").html(msg);
+    }
+
+    function setModelBtn(flag) {
+        $("#msgBox #btn-close").attr("disabled", !flag);
+
+    }
+
+    function form_focus() {
+
+        setTimeout(function () {
+            try {
+                d = $("#resend-a-key-box #inputValid");
+                d.focus();
+                d.select();
+            } catch (e) {
+            }
+        }, 200);
+    }
+    form_focus();
+
+    function formShake() {
+        var id = "#resend-a-key-box";
+        var p = new Array(15, 30, 15, 0, -15, -30, -15, 0);
+        p = p.concat(p.concat(p));
+        $(id).css("position", 'relative');
+        _shake(id, p, 12);
+    }
+
+    function _shake(id, a, d) {
+        c = a.shift();
+        $(id).css("left", c + "px");
+        if (a.length > 0) {
+            setTimeout(function () {
+                _shake(id, a, d);
+            }, d);
+        } else {
+            try {
+                $(id).css("position", 'static');
+
+                form_focus();
+            } catch (e) {
+
+            }
+        }
+    }
+})();
+
+</script>
+{% end %}

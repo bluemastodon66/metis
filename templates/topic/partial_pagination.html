@@ -1,0 +1,18 @@
+{% if pages %}
+<div class="page-box">
+    <ul class="pagination pagination-sm">
+        {% for r in pages %}
+            {% if r['current'] %}
+                <li class="active"><a>{{ r['text'] }}</a></li>
+            {% else %}
+                {% if r['disable'] %}
+                    <li class="disabled"><a>{{ r['text'] }}</a></li>
+                {% else %}
+                    <li><a href="{{ webroot_url(url+"?s="+r['value']+parameters) }}">{{ r['text'] }}</a></li>
+                {% end %}
+            {% end %}
+        {% end %}
+    </ul>
+
+</div>
+{% end %}

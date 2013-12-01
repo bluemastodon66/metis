@@ -1,0 +1,63 @@
+{% for r in posts %}
+<div class="row">
+    <div class="postbody">
+        <legend>
+            <h3 class="first">
+
+                {% if r['post_status'] == 'protect' %}
+                <span class="glyphicon glyphicon-lock"></span>
+                {% else %}
+                {% if r['post_status'] == 'private' %}
+                <span class="glyphicon glyphicon-minus-sign"></span>
+                {% else %}
+                <span class="glyphicon glyphicon-th-large"></span>
+                {% end %}
+                {% end %}
+                <a href="{{ webroot_url("topic/show/"+str(r['ID'])) }}">{{ r['post_title'] }}</a>
+                {% if r['post_status'] == 'private' %}( Private ){% end %}
+                {% if r['deleted'] == 1 %} [Deleted]{% end %}
+            </h3>
+        </legend>
+        <p class="author"><a href="{{ webroot_url("topic/user/"+str(r['post_author'])) }}"><span
+                class="glyphicon glyphicon-user"></span> </a>by <strong><a
+                href="{{ webroot_url("topic/user/"+str(r['post_author'])) }}"
+                class="username-coloured">
+            {% if 'user' in r and r['user'] %}
+            {{ r['user'].user_login }}
+            {% else %}
+            unknown
+            {% end %}
+                </a></strong>
+            <span class="badge pull-right">{{ r['post_date'].strftime('%B %d, %Y') }}</span>
+        </p>
+
+        <p class="action">
+            {% if is_manager or current_user['ID'] == r['post_author'] %}
+            <a href="{{ webroot_url("topic/edit/"+str(r['ID'])) }}">
+                <span class="glyphicon glyphicon-edit"></span>
+                <span>Edit</span>
+            </a>
+            {% end %}
+        </p>
+
+        <div class="content">
+            {% if r['unlock'] %}
+            {% if showGist %}
+            {% if len(r['summary']) > 100 %}
+            {% raw r['summary'][:100] %}....
+            <a href="{{ webroot_url("topic/show/"+str(r['ID'])) }}">More</a>
+            {% else %}
+            {% raw r['post_content'] %}
+            {% end %}
+            {% else %}
+            {% raw r['post_content'] %}
+            {% end %}
+            {% else %}
+            *** protected by password ***
+
+            {% end %}
+        </div>
+    </div>
+</div>
+{% end %}
+

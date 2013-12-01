@@ -1,0 +1,35 @@
+{% extends "../simple_layout.html" %}
+{% block headerarea %}
+<link rel="stylesheet" href="{{ static_url("css/activate_account.css") }}" media="screen">
+{% end %}
+{% block body %}
+
+<div id="acitvate-box">
+    <h1><a href="{{ webroot_url("") }}" title="{{ web_description }}">{{ web_title }}</a></h1>
+    <div class='panel panel-default'>
+        {% if isSuccess is True %}
+        <div>
+        Dear <span class="login-name">{{ login_name }}</span>, Congrats you have successfully activate your account.
+        </div>
+        {% else %}
+        <div class="err">
+        Dear Client, There is an error happened when you were trying to activate your acccout.
+        Please kindly contact to us.
+        </div>
+
+        {% end %}
+        <hr />
+        <p>
+        <a href="{{ webroot_url("") }}" title="Home">Go Back to Website</a>
+        </p>
+
+    </div>
+</div>
+
+
+
+
+{% end %}
+
+
+

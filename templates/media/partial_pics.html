@@ -1,0 +1,24 @@
+{% if pages %}
+<div id="picture-page" class="page-box">
+    <ul class="pagination pagination-sm">
+        {% for r in pages %}
+        {% if r['current'] %}
+        <li class="active"><a>{{ r['text'] }}</a></li>
+        {% else %}
+        {% if r['disable'] %}
+        <li class="disabled"><a>{{ r['text'] }}</a></li>
+        {% else %}
+        <li><a href="{{ webroot_url("media/api/"+r['value']) }}" data="{{ r['value'] }}">{{ r['text'] }}</a></li>
+        {% end %}
+        {% end %}
+        {% end %}
+    </ul>
+</div>
+{% end %}
+
+{% for r in pics %}
+<div id="pictures">
+    <a href="#"><img src="{{ static_url(r.related_path+"thumb-"+r.name) }}" /></a>
+</div>
+<div class="sep10"></div>
+{% end %}

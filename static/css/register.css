@@ -1,0 +1,48 @@
+/**
+ * Created with PyCharm.
+ * User: LSJ
+ * Date: 13/10/18
+ * Time: 下午1:58
+ * To change this template use File | Settings | File Templates.
+ */
+
+#register-box {
+    width: 450px;
+    padding: 10px 0 0;
+    margin: auto;
+}
+#register-box .panel
+{
+    border: 1px solid #e5e5e5;
+    -webkit-box-shadow: rgba(200, 200, 200, 0.7) 0 4px 10px -1px;
+    box-shadow: rgba(200, 200, 200, 0.7) 0 4px 10px -1px;
+}
+#register-box h1 {
+    font-size: 2em;
+    margin: .67em 0;
+}
+
+#register-box table td:last-child {
+    padding-left: 4px;
+}
+
+#register-box h1 a {
+    background-image: url('../images/login-logo.png');
+    background-position: top center;
+    background-repeat: no-repeat;
+    height: 67px;
+    text-indent: -9999px;
+    outline: 0;
+    overflow: hidden;
+    padding-bottom: 15px;
+    display: block;
+}
+
+#register-box form {
+    padding: 15px;
+}
+
+.msg-box {
+width: 350px;
+padding-top: 20px;
+}

@@ -1,0 +1,59 @@
+{% extends "../admin_layout.html" %}
+
+{% block body %}
+
+                  <div class="page-header">
+                        <h1>控制台</h1>
+                    </div>
+
+                    <div class="bs-callout bs-callout-info">
+                          <h4>說明</h4>
+                          <p>這裡是控制台，顯示一些簡要的資訊。</p>
+                          <p>目前線上人數: <span style="color:#bc0000;">{{ onlineCount }}</span> 人。</p>
+                    </div>
+
+                    <div class="information">
+
+                    <div>
+                        <div class="panel panel-default panel-success">
+                          <div class="panel-heading">最近加入會員</div>
+                            <div class="panel-body">
+                              <ul class="nav nav-pills nav-stacked">
+                                      {% for r in recentJoin %}
+                                      <li>
+                                      <a href="{{ webroot_url("admin/users/edit/?id=") }}{{ r['ID'] }}">
+                                        <span class="pull-right">{{ r['date'] }}</span>
+                                        {{ r['name'] }}
+                                      </a>
+                                      </li>
+                                        {% end %}
+                                </ul>
+                          </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel panel-default panel-primary">
+                          <div class="panel-heading">會員統計<span class="badge pull-right">{{ statTotalRole }}</span></div>
+                          <div class="panel-body">
+                              <ul class="nav nav-pills nav-stacked">
+
+                                      {% for r in statRole %}
+                                      <li>
+                                      <a href="{{ webroot_url("admin/users/?act=role&id=") }}{{ r['role'] }}">
+                                        <span class="badge pull-right">{{ r['count'] }}</span>
+                                        {{ r['role'] }}
+                                      </a>
+                                      </li>
+                                        {% end %}
+                              </ul>
+                          </div>
+                        </div>
+                    </div>
+
+                    </div>
+
+
+{% end %}
+
+
+

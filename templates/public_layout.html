@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en"><!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ web_description }}">
+    <meta name="author" content="{{ web_site_name }}">
+
+    <!-- Bootstrap Stylesheet -->
+
+    <link rel="stylesheet" href="{{ static_url("libs/bootstrap/dist/css/bootstrap.css") }}" media="all">
+
+    <!-- Plugin Stylsheets first to ease overrides -->
+    <!-- End Plugin Stylesheets -->
+    <script src="{{ static_url("libs/google_code_prettify/prettify.js") }}"></script>
+    <link rel="stylesheet" href="{{ static_url("libs/google_code_prettify/prettify.css") }}" media="all">
+
+    <link rel="stylesheet" href="{{ static_url("layout.css") }}" media="screen">
+    <script src="{{ static_url("libs/jquery/jquery.min.js") }}"></script>
+    <script src="{{ static_url("libs/bootstrap/dist/js/bootstrap.min.js") }}"></script>
+
+    <link rel="stylesheet" href="{{ static_url("libs/lightbox/css/lightbox.css") }}">
+    <script src="{{ static_url("libs/lightbox/js/lightbox-2.6.min.js") }}"></script>
+
+    <!-- Seperated Stylsheets -->
+    {% block headerarea %}{% end %}
+    <!-- End Seperated Stylesheets -->
+
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="{{ static_url("libs/html5/html5shiv.js") }}"></script>
+<![endif]-->
+
+    <title>{{ web_title }}:: {{ title }}</title>
+
+</head>
+<body>
+<div id="maincontainer">
+    <header class="navbar-inverse bs-docs-nav" role="banner">
+        <div id="banner">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".bs-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ webroot_url("") }}"><img src="{{ static_url("logo.png") }}" alt="{{ web_description }}"
+                                                      title="{{ web_description }}"
+                                                      style="width: 158px; height: 22px;"></a>
+            </div>
+            <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class='divider-vertical'></li>
+                    <li class='{{ 'active' if current_path=="/" else ''}}'><a href="{{ webroot_url("") }}">Home</a></li>
+                    <li class='{{ 'active' if current_path=="/topic/" else ''}}'><a href="{{ webroot_url("topic/") }}">Post</a></li>
+
+                    {% if is_login %}
+                    <li class="{{ 'active' if current_path=="/client/setting/" else ''}}"><a href='{{ webroot_url("client/setting/") }}'>Settings</a>
+                    </li>
+                    <li><a href='{{ webroot_url("auth/logout_process/") }}'>Logout ( {{ current_user['user_login'] }} )</a></li>
+                    {% else %}
+                    <li><a href='{{ webroot_url("auth/register/") }}'>Register</a></li>
+                    <li><a href='{{ webroot_url("auth/login/") }}'>Login</a></li>
+                    {% end %}
+                    {% if 'role' in current_user and current_user['role'] == 'admin' %}
+                    <li><a href='{{ webroot_url("admin/") }}'>Admin</a></li>
+                    {% end %}
+                </ul>
+                <div class="clear"></div>
+            </nav>
+            <!--/.navbar-collapse -->
+        </div>
+    </header>
+    <div id="contentwrapper">
+        {% block body %}{% end %}
+    </div>
+    <div class="clear"></div>
+    <footer id="footer">
+        <div class='container'>
+            <div>
+                <strong><a class='dark' href='{{ webroot_url("page/about") }}'>About</a></strong>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <strong><a class='dark' href='{{ webroot_url("page/faq") }}'>FAQ</a></strong>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <strong><a class='dark' href='https://github.com/bluemastodon66/'
+                           target="_blank">Github</a></strong>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <strong><a class='dark' href='{{ webroot_url("rss") }}' target="_blank">RSS</a></strong>
+            </div>
+            <div class='sep10'></div>
+            <div class='col_fade'>
+                <p>Project was designed by alvin.lee</p>
+
+                <p>Copyright 2013. All Rights Reserved. Ver.{{ current_ver }}</p>
+            </div>
+        </div>
+
+
+    </footer>
+
+</div>
+
+
+<!-- Seperated Scripts -->
+{% block scriptlist %}{% end %}
+<!-- End Seperated Scripts -->
+<script>
+    /**
+ * Created with PyCharm.
+ * User: LSJ
+ * Date: 13/10/18
+ * Time: 下午1:58
+ * To change this template use File | Settings | File Templates.
+ */
+
+(function () {
+    $header = $("header");
+    $footer = $("footer");
+    $body = $("#contentwrapper");
+    var orgH = $body.height();
+    if(orgH < 300) { orgH = 300;}
+    function calculateH()
+    {
+
+        var maxh = $( window ).height();
+        var h1 = $header.height();
+        var h2 = $footer.height();
+        var newH = maxh-h1-h2- 28;
+        var curH = $body.height();
+        if(newH > orgH)
+        {
+             $body.height(newH);
+        } else {
+             $body.height(orgH);
+
+        }
+//        console.log(h1+","+h2+" , "+maxh);
+
+
+
+    }
+    $( window ).resize(calculateH);
+
+    calculateH();
+})();
+
+
+</script>
+<script>prettyPrint();</script>
+</body>
+</html>

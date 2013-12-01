@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en"><!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ web_description }}">
+    <meta name="author" content="{{ web_site_name }}">
+
+    <!-- Bootstrap Stylesheet -->
+
+    <link rel="stylesheet" href="{{ static_url("libs/bootstrap/dist/css/bootstrap.css") }}" media="all">
+
+    <!-- Plugin Stylsheets first to ease overrides -->
+    <!-- End Plugin Stylesheets -->
+
+    <link rel="stylesheet" href="{{ static_url("admin/css/main.css") }}" media="screen">
+    <script src="{{ static_url("libs/jquery/jquery.min.js") }}"></script>
+    <script src="{{ static_url("libs/bootstrap/dist/js/bootstrap.min.js") }}"></script>
+
+
+    <!-- Seperated Stylsheets -->
+    {% block headerarea %}{% end %}
+    <!-- End Seperated Stylesheets -->
+
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+<script src="{{ static_url("libs/html5/html5shiv.js") }}"></script>
+<![endif]-->
+
+    <title>{{ web_title }}</title>
+
+</head>
+<body>
+<div id="maincontainer">
+    <header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+        <div id="banner">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse"
+                        data-target=".bs-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="{{ webroot_url("") }}">{{ web_site_name }}</a>
+            </div>
+            <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+                <ul class="nav navbar-nav">
+                    <li class='divider-vertical'></li>
+                    <li class='{{ 'active' if current_path==webroot_url("admin/") else '' }}'><a href='{{ webroot_url("admin/") }}'>Admin</a></li>
+                    <li><a href='{{ webroot_url("") }}'>Home</a></li>
+                    <li><a href='{{ webroot_url("auth/logout_process/")}}'>Logout ( {{ current_user['user_login'] }}
+                        )</a></li>
+                </ul>
+                <div class="clear"></div>
+            </nav>
+            <!--/.navbar-collapse -->
+        </div>
+    </header>
+    <div id="contentwrapper">
+
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="bs-sidebar hidden-print affix" role="complementary">
+                    <ul class="nav bs-sidenav">
+                        <li class="{{ 'active' if current_path==webroot_url('admin/') else '' }}">
+                            <a href="{{ webroot_url("admin/") }}">Control Panel</a>
+                        </li>
+                        <li class="{{ 'active' if current_path==webroot_url("admin/web_option/") else '' }}">
+                            <a href="{{ webroot_url("admin/web_option/") }}">Web Settings</a>
+                        </li>
+
+                        <li class="{{ 'active' if current_path==webroot_url("admin/users/") else '' }}">
+                            <a href="{{ webroot_url("admin/users/") }}">Accounts</a>
+                        </li>
+
+                        <li class="{{ 'active' if current_path==webroot_url("admin/topics/") else '' }}">
+                            <a href="{{ webroot_url("admin/topics/") }}">Topics</a>
+                            <ul class="nav">
+                                <li><a href="
+                                        {{ webroot_url("topic/add/?nextmove="+(nextmove if 'nextmove' in globals() else '')) }}">Add
+                                    Topic</a></li>
+                            </ul>
+                        </li>
+                        <li class="{{ 'active' if current_path==webroot_url("admin/pages/") else '' }}">
+                            <a href="{{ webroot_url("admin/pages/") }}">Pages</a>
+                            <ul class="nav">
+                                <li><a href="
+
+                                        {{ webroot_url("pages/add/?nextmove="+(nextmove if 'nextmove' in globals() else '')) }}">Add
+                                    Page</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="{{ 'active' if current_path==webroot_url("admin/replies/") else '' }}">
+                            <a href="{{ webroot_url("admin/replies/") }}">Replies</a>
+                        </li>
+                        <li class="{{ 'active' if current_path==webroot_url("admin/categories/") else '' }}">
+                            <a href="{{ webroot_url("admin/categories/") }}">Category</a>
+                        </li>
+                        <li class="{{ 'active' if current_path==webroot_url("admin/tags/") else '' }}">
+                            <a href="{{ webroot_url("admin/tags/") }}">Tag</a>
+                        </li>
+                        <li class="{{ 'active' if current_path==webroot_url("admin/media/") else '' }}">
+                            <a href="{{ webroot_url("admin/media/") }}">Media</a>
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9" role="main">
+                {% block body %}{% end %}
+            </div>
+        </div>
+
+
+    </div>
+    <div class="clear"></div>
+    <footer id="footer" class="bs-footer">
+        <div class='container'>
+
+            <div class='col_fade'>
+                <p>This is a sample website built by alvin.lee</p>
+
+                <p>Copyright 2013. All Rights Reserved.</p>
+            </div>
+        </div>
+
+
+    </footer>
+
+</div>
+
+
+<!-- Seperated Scripts -->
+{% block scriptlist %}{% end %}
+<!-- End Seperated Scripts -->
+</body>
+</html>

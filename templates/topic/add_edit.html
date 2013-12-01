@@ -1,0 +1,364 @@
+{% extends "../editor_layout.html" %}
+{% block body %}
+<div class='sep20'></div>
+{% if data or isAdd %}
+
+
+<div class="row">
+    {% if isAdd %}
+    <form id='post-form' method="post" action="{{ webroot_url("topic/add/") }}">
+        {% else %}
+        <form id='post-form' method="post" action="{{ webroot_url("topic/edit/"+str(data.ID)) }}">
+            {% end %}
+            {% raw xsrf_form_html() %}
+            <input type="hidden" name="nextmove" value="{{ nextmove }}"/>
+            <input type="hidden" name="post_status" value="{{ 'public' if isAdd else data.post_status }}"/>
+
+            <div class="col-md-9">
+                <ol class="breadcrumb">
+                    <li><a href="{{ webroot_url("") }}">Home</a></li>
+                    <li><a href="{{ webroot_url("topic/") }}">Post</a></li>
+                    <li class="active">{{ title }}</li>
+                </ol>
+                <div id='content'>
+
+                    {% if 'error' in globals() %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% end %}
+                    <div class="form-group">
+                        <input maxlength="200" type="text" id="title" name="post_title" class='form-control'
+                               placeholder='Title......' value='{{ data.post_title if not isAdd else '' }}'/>
+                    </div>
+
+                    <textarea id="post_content" name="post_content" style="width:100%;height: 250px;">
+                        {% if not isAdd %}
+                        {{ data.post_content }}
+                        {% end %}
+                    </textarea>
+
+                    <!--- topic -->
+                    <div class='sep50'></div>
+                </div>
+                <!-- end fake -->
+
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        Visibility:
+                        <div class="input-group">
+                            <input id="r_public" type="radio" name="p_status" value='public'
+                                    {{ 'checked' if isAdd else 'checked' if data.post_status == 'public' else '' }}>
+                            <label for="r_public">Public </label>
+                            <input id="r_private" type="radio" name="p_status" value='private'
+                                    {{ 'checked' if not isAdd and data.post_status == 'private' else '' }}>
+                            <label for="r_private">Private </label>
+                            <input id="r_protect" type="radio" name="p_status" value='protect'
+                                    {{ 'checked' if not isAdd and data.post_status == 'protect' else '' }}>
+                            <label for="r_protect">Protect </label>
+                        </div>
+                        <!-- /input-group -->
+                        <div id="post-password"
+                             class="input-group {{ '' if not isAdd and data.post_status == 'protect' else 'hidden' }}">
+                            <input maxlength="10" type="text" id="protect" name="post_password" class='form-control'
+                                   placeholder='Password......'/>
+                        </div>
+                        <!-- /input-group -->
+                        <div class="sep5"></div>
+                        {% if not isAdd %}
+                        Delete:
+                        <div class="input-group">
+                            <input id="r_recycle" type="checkbox" name="p_delete" value='1'
+                                    {{ 'checked' if data.deleted == 1 else '' }}>
+                            <label for="r_recycle">Recycle </label>
+                        </div>
+                        <div class="sep5"></div>
+                        {% end %}
+
+                        Feedback:
+                        <div class="input-group">
+                            <input id="r_feedback_open" type="checkbox" name="p_feedback" value='open'
+                                    {{ 'checked' if isAdd or data.comment_status == 'open' else '' }}>
+                            <label for="r_feedback_open">Allowed </label>
+                        </div>
+                        <div class="sep5"></div>
+                        <button type="button" id="form-submit" class="btn btn-success">Submit</button>
+                    </div>
+                </div>
+                <div class='sep10'></div>
+
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        Category:
+                        <div class="sep10"></div>
+                        {% for r in catOptions %}
+                        <div class="input-group-sm">
+                            <input id="cat_{{ r['ID'] }}" type="checkbox" name="post-category" {{ r['chk'] }}
+                                   value='{{ r['ID'] }}'>
+                            <label for="cat_{{ r['ID'] }}">{{ r['slug'] }}</label>
+                        </div>
+                        {% end %}
+
+                    </div>
+                </div>
+                <div class='sep10'></div>
+
+
+
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        Post Tags:
+                        <div class="sep10"></div>
+                        <div class="input-group-sm hidden">
+                            <textarea id="post-tags" name="post-tags" class="form-control">
+                                {% for r in tags %}{{ r['slug'] }},{% end %}
+                            </textarea>
+
+                            <div class="sep10"></div>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">TAG</span>
+                            <input id="inpt_tag" class="form-control" maxlength="100" type="text" name="post[tags]"
+                                   value=''>
+                        </div>
+                        <!-- /input-group -->
+                        <div id="tagchecklist" class="tagchecklist">
+
+                        </div>
+                        <!-- /input-group -->
+                        <div class="sep5"></div>
+                    </div>
+                </div>
+                <div class='sep10'></div>
+
+
+                 {% if pics %}
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <h4>Pictures <span class="badge pull-right bkgreen">{{ picsTotal }}</span></h4>
+
+                        <div id="picture-collection">
+                            {% module Template("media/partial_pics.html",pages=pages, pics=pics) %}
+                        </div>
+                    </div>
+                </div>
+                <div class='sep10'></div>
+                {% end %}
+
+
+            </div>
+
+</div>
+</form>
+</div>
+
+{% else %}
+<div class="well box">
+    The record can not be found or you don't have permission.
+</div>
+<div class="sep20"></div>
+{% end %}
+{% end %}
+
+{% block scriptlist %}
+<script>
+    /**
+     * Created with PyCharm.
+     * User: LSJ
+     * Date: 13/10/18
+     * Time: 下午5:58
+     * To change this template use File | Settings | File Templates.
+     */
+
+    (function () {
+// bind events //
+        var root = "/static/";
+        tinyMCE.init({
+            // General options
+            selector: "#post_content",
+            mode: "textareas",
+            theme: "modern",
+            plugins: [
+                "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime media nonbreaking table contextmenu directionality",
+                "paste textcolor"
+            ],
+            menubar: false,
+            toolbar1: "insertfile undo redo | styleselect fontselect fontsizeselect | bold italic strikethrough underline superscript subscript | alignleft aligncenter alignright alignjustify",
+            toolbar2: "bullist numlist outdent indent | forecolor backcolor hr | fullscreen nonbreaking anchor visualblocks codearea charmap table | link media image | preview code",
+            image_advtab: true,
+            content_css: root + 'layout.css,' + root + 'libs/bootstrap/dist/css/bootstrap.min.css,' + root + 'libs/google_code_prettify/prettify.css',
+            setup: function (editor) {
+                editor.addButton('codearea', {
+                    text: 'Code',
+                    icon: false,
+                    onclick: function () {
+                        editor.insertContent('<pre class="prettyprint"></pre>');
+                    }
+                });
+            }
+
+
+        });
+        $postStatus = $('input:hidden[name=post_status]');
+        $('input:radio[name=p_status]').click(
+                function () {
+                    var v = ($(this).val());
+                    $postStatus.val(v);
+                    if (v == 'protect') {
+                        $('#post-password').removeClass("hidden");
+                    } else {
+                        $('#post-password').addClass("hidden");
+                    }
+                }
+        );
+        $postPass = $('input:text[name=post_password]');
+        $postTitle = $('input:text[name=post_title]');
+        $postForm = $('form#post-form');
+        $inptTags = $('input#inpt_tag');
+        $tagsList = $('#tagchecklist');
+        $currentTags = $('#post-tags');
+        var currentTags = {};
+        loadTags = function () {
+            var text = $currentTags.val().trim();
+            var lst = text.split(",");
+            for (var i = 0; i < lst.length; i++) {
+                var tmp = lst[i].trim();
+                if (tmp == "") {
+                    continue;
+                }
+                currentTags["t_" + tmp] = tmp;
+                addTag(tmp);
+
+            }
+
+        }
+        setTags = function () {
+            var html = "";
+            var flag = "";
+            for (var key in currentTags) {
+                html += flag + currentTags[key];
+                flag = ",";
+            }
+            $currentTags.val(html);
+        }
+        $('button#form-submit').click(function () {
+            formSubmit();
+        });
+        $inptTags.keyup(function (e) {
+            e.preventDefault();
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+                var text = $(this).val().trim();
+                //
+                if (text == "") {
+                    return false;
+                }
+                var lst = text.split(",");
+                for (var i = 0; i < lst.length; i++) {
+                    var tmp = lst[i].trim();
+                    if (tmp == "") {
+                        continue;
+                    }
+                    tmp = tmp.toLowerCase();
+                    if (currentTags["t_" + tmp] == null) {
+                        addTag(tmp);
+                    }
+                }
+
+                $(this).val('');
+            }
+            return false;
+
+        });
+
+        var htmlBtnX = "<a class=\"ntdelbutton\">X</a>&nbsp;";
+        addTag = function (v) {
+            currentTags["t_" + v] = v;
+            var html = "<span>" + htmlBtnX + v + "</span>";
+            var old = $tagsList.html();
+            $tagsList.html(old + html);
+        }
+
+        formSubmit = function () {
+            setTags();
+            var status = $postStatus.val();
+            var postPwd = $postPass.val().trim();
+            var title = $postTitle.val().trim();
+
+            if (status == 'protect') {
+                if (postPwd == "") {
+                    alert('Password Can not be empty!');
+                    $postPass.focus();
+                    return false;
+                }
+            }
+            if (title == "") {
+                $postTitle.focus();
+                return false;
+            }
+            $postForm.submit();
+        };
+
+
+        $tagsList.click(function (e) {
+
+
+            $this = $(e.target);
+            var cls = $this.attr("class");
+            if (cls === "ntdelbutton") {
+                var t = $this.parent().html();
+                var text = t.substr(htmlBtnX.length);
+                delete currentTags["t_" + text];
+                $this.parent().remove(); // remove
+            }
+
+
+        });
+
+        $("#inpt_tag").autocomplete({
+            source: "/topic/term/",
+            minLength: 3,
+            select: function (event, ui) {
+
+            }
+        });
+
+        // init //
+
+        loadTags();
+
+
+        function blindPaginate() {
+            $("#pictures a img").click(function (e) {
+                e.preventDefault();
+                $this = $(this);
+                var url = $this.attr("src");
+                var bigurl = url.replace("/thumb-", "/");
+                var html = '<a class="block-pull-right" href="' + bigurl + '" data-lightbox="roadtrip"><img src="' + url + '"  /></a>';
+                var oldHtml = tinyMCE.activeEditor.getContent();
+                tinyMCE.activeEditor.setContent(oldHtml + html);
+            });
+            $("#picture-page a").click(function (e) {
+                e.preventDefault();
+                $this = $(this);
+                var url = $this.attr('href');
+
+                if (url) {
+                    $.get(url, function (data) {
+                        $("#picture-collection").html(data);
+                        blindPaginate();
+                    });
+                }
+            });
+
+        }
+
+        blindPaginate();
+
+    })();
+
+
+</script>
+{% end %}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>{{ title }}</title>
+        <description>{{ description }}</description>
+        <link>{{ webrootlink }}</link>
+        {% for r in posts %}
+        <item>
+            <title>{{ r['post_title'] }}</title>
+            <guid>{{ r['ID'] }}</guid>
+            <author>
+                {% if 'user' in r and r['user'] %}
+                {{ r['user'].user_email }}
+                {% end %}
+            </author>
+            <pubDate>
+                {{ r['post_date'].strftime('%B %d, %Y') }}
+            </pubDate>
+            <description>{{ r['summary'][:500] }}</description>
+            <link>{{ webrootlink }}topic/?id={{ str(r['ID']) }}</link>
+        </item>
+        {% end %}
+    </channel>
+</rss>

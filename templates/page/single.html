@@ -1,0 +1,187 @@
+{% extends "../public_layout.html" %}
+{% block headerarea %}
+<script src="{{ static_url("libs/tinymce/tinymce.min.js") }}"></script>
+{% end %}
+{% block body %}
+<div class='sep20'></div>
+<div class="row">
+    {% if data %}
+    <div class="col-md-9">
+        <div id='content'>
+            <ol class="breadcrumb">
+                <li><a href="{{ webroot_url("") }}">Home</a></li>
+                <li class="active">{{ title }}</li>
+            </ol>
+            <!--- topic -->
+            <div class="postbody">
+                <legend>
+                    <h3 class="first">
+                        {% if data.post_status == 'protect' %}
+                        <span class="glyphicon glyphicon-lock"></span>
+                        {% else %}
+                        {% if data.post_status == 'private' %}
+                        <span class="glyphicon glyphicon-minus-sign"></span>
+                        {% else %}
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        {% end %}
+                        {% end %}
+                        {{ data.post_title }}
+                        {% if data.post_status == 'private' %}( Private ){% end %}
+                        {% if data.deleted == 1 %} [Deleted]{% end %}
+                    </h3>
+                </legend>
+                <p class="subtitle">
+                    <span class="badge pull-right bkred">{{ data.post_date.strftime('%B %d, %Y') }}</span>
+                </p>
+
+
+                <p class="action">
+                    {% if permission['edit'] %}
+                    <a href="{{ webroot_url("pages/edit/"+str(data.ID)) }}">
+                        <span class="glyphicon glyphicon-edit"></span>
+                        <span>Edit</span>
+                    </a>
+                    {% end %}
+                </p>
+
+                <div class="content">
+                    {% if not unlock %}
+                    <form action="{{ webroot_url("page/"+data.permalink) }}" method="POST">
+                        <input id='post-pwd' type="password" name="password" maxlength="20" placeholder="Password..."/>
+                        <input type="submit"/>
+                    </form>
+                    {% else %}
+                    {% raw data.post_content %}
+                    <div class="text-center text-info">This page was modified on
+                        {{ data.post_modified.strftime('%H:%M,%B %d, %Y') }}</div>
+                    {% end %}
+                </div>
+            </div>
+
+
+            <div class='sep50'></div>
+        </div>
+        <!-- end fake -->
+    </div>
+    <div class="col-md-3">
+        {% if 'categories' in globals() %}
+        <div class='panel panel-success'>
+            <div class='panel-heading'>
+                <h3 class="panel-title">Category</h3>
+            </div>
+            <div class='panel-body'>
+                <ul class='category'>
+                    {% for cat in categories %}
+                    <li>
+                        <span class="badge pull-right bkred">{{ cat['count'] }}</span>
+                        <a href="{{ webroot_url("topic/cat/"+cat['slug']) }}">{{ cat['slug'] }}</a>
+                    </li>
+                    {% end %}
+                </ul>
+            </div>
+        </div>
+        <div class='sep10'></div>
+        {% end %}
+        {% if 'tags' in globals() %}
+        <div class='panel panel-success'>
+            <div class='panel-heading'>
+                <h3 class="panel-title">Tags</h3>
+            </div>
+            <div class='panel-body'>
+                {% for tag in tags %}
+                <a class="cloud-tag" href="{{ webroot_url("topic/tag/"+tag['slug']) }}">
+                    <span class="badge" style="font-size: {{ tag['size'] }}">{{ tag['slug'] }}</span>
+                </a>
+                {% end %}
+            </div>
+        </div>
+        <div class='sep10'></div>
+        {% end %}
+
+    </div>
+    {% else %}
+    <div class="well box">
+        The record can not be found or you don't have permission.
+    </div>
+    {% end %}
+</div>
+
+{% end %}
+
+
+{% block scriptlist %}
+<script>
+    /**
+     * Created with PyCharm.
+     * User: LSJ
+     * Date: 13/10/18
+     * Time: 下午5:58
+     * To change this template use File | Settings | File Templates.
+     */
+
+    (function () {
+// bind events //
+        var root="/static/";
+
+        tinyMCE.init({
+            // General options
+            selector: "#reply_content",
+            mode: "textareas",
+            theme: "modern",
+            plugins: [
+                "autolink link hr"
+            ],
+            menubar: false,
+            toolbar1: "bold italic strikethrough underline superscript subscript | alignleft aligncenter alignright alignjustify",
+            image_advtab: false,
+            content_css: root+'layout.css,'+root+'libs/bootstrap/dist/css/bootstrap.min.css'
+        });
+        $author = $('.reply input:text[name=reply_author]');
+        $email = $('.reply input:text[name=reply_email]');
+        $url = $('.reply input:text[name=reply_url]');
+        $form = $('#reply-form');
+        $form.submit(function (e) {
+
+            var content = tinymce.get('reply_content').getContent();
+            var author = $author.val().trim();
+            var email = $email.val().trim();
+            if (author == "") {
+                $author.focus();
+                return false;
+            }
+            if (email == "") {
+                $email.focus();
+                return false;
+            }
+            var len = content.replace(/(<([^>]+)>)/ig, "").length;
+            if (len <= 10) {
+                alert('An reply has to have at least 20 words!');
+                tinymce.get('reply_content').focus();
+                return false;
+            }
+            return true;
+        });
+
+// bind event
+        function blindPaginate() {
+            $("#reply-paginator a").click(function (e) {
+                e.preventDefault();
+                $this = $(this);
+                var url = $this.attr('href');
+                if (url) {
+                    var p = url.replace("topic", "reply");
+                    $.get(p, function (data) {
+                        $("#reply-list").html(data);
+                        blindPaginate();
+                    });
+                }
+            });
+
+        }
+
+        blindPaginate();
+
+    })();
+
+</script>
+{% end %}

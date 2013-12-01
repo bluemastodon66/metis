@@ -1,0 +1,263 @@
+{% extends "../simple_layout.html" %}
+{% block headerarea %}
+<link rel="stylesheet" href="{{ static_url("css/login.css") }}" media="screen">
+{% end %}
+{% block body %}
+
+
+<div id="login-wrap">
+    <h1><a href="{{ webroot_url("") }}" title="{{ web_description }}">{{ web_title }}</a></h1>
+
+    <div id="login-form-box">
+        <section class="login-inner-form active">
+
+            <form id="login-form" class="form-vertical" action="{{ webroot_url("auth/login/",None) }}" method="POST">
+
+                <input type="hidden" id="inputNextMove" name="nextmove" value="{{ nextmove }}"/>
+
+                <div class='form-group'>
+                    <label class='control-label' for='inputAccount'>用戶名</label>
+                    <input class='form-control' id='inputAccount' placeholder="Username" name="Login[username]"
+                           size='30' type='text' value='{{ login_name }}'/>
+                </div>
+
+                <div class='form-group'>
+                    <label class='control-label' for='inputPassword'>Password</label>
+                    <input class='form-control' id='inputPassword' placeholder="Password" name="Login[password]"
+                           size='30' type='password' value=''/>
+                </div>
+
+                <div class='form-group'>
+                    <label class='control-label' for='inputValid'>Valid Code</label>
+                    <table>
+                        <tr>
+                            <td>
+                                <input class='form-control' id='inputValid' placeholder="Valid Code"
+                                       name="Login[validcode]" size='30' type='text' value=''/>
+                            </td>
+                            <td>
+                                <a href="#" id="change-valid" title="Change Valid Code">
+                                <img id="valid-img" src="{{ webroot_url("session_captcha/validcode/") }}?_dc={{ rand }}"
+                                     width="80"/>
+                                    </a>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+
+                <div class="form-group">
+                    <label class="checkbox">
+                        <input id="inputRemember" type="checkbox" name="Login[remember]" class="uniform"
+                               {% if login_name %}checked{% end %}> Remember me
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success btn-block btn-large">Login</button>
+                </div>
+            </form>
+            <div id="link"><table width="100%">
+                <tr>
+                    <td align="left">
+                        <a href="{{ webroot_url("auth/lost_password") }}" title="密碼招領">Forgot Password？</a></td>
+                    <td align="right"><a href="{{ webroot_url("") }}" title="Home">Back To Home</a></td>
+                </tr>
+            </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+  <div class="modal fade" id="msgBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog msg-box">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="msgTitle">Please Wait</h4>
+        </div>
+        <div class="modal-body" id="msgBody">
+
+        </div>
+        <div class="modal-footer">
+          <button id="btn-close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+{% end %}
+{% block scriptlist %}
+<!-- Scripts -->
+
+<script>
+  /**
+ * Created with PyCharm.
+ * User: LSJ
+ * Date: 13/10/18
+ * Time: 下午1:58
+ * To change this template use File | Settings | File Templates.
+ */
+
+(function () {
+// bind events //
+    $("#login-wrap #change-valid").click(function (e) {
+        changeValid();
+        return false;
+    });
+
+    $("#login-wrap #login-form").submit(login);
+
+
+    var account, pwd, validcode, remember, nextmove;
+
+    function changeValid() {
+        $img = $("img#valid-img");
+        var url = $img.prop("src");
+        var newUrl = url.replace(/\?_dc=[0-9]+/, "");
+        newUrl += "?_dc=" + Math.floor(Math.random() * 10000) + 1;
+        $img.prop("src", newUrl);
+
+    }
+
+    function login(e) {
+        $this = $(this);
+        if (checkvalid() == false) {
+            formShake();
+            return false;
+        }
+        $this[0].reset(); // reset form //
+
+
+        showModelMsg("Please Wait", "Authorization Requesting...");
+        var formAction = $this.attr("action");
+        $.ajax({
+            url: formAction, type: 'post', dataType: 'json', data: {
+                'Login[username]': account, 'Login[password]': pwd, 'Login[remember]': remember, 'Login[validcode]': validcode, 'nextmove': nextmove
+            }, async: true, cache: false, success: function (res) {
+                setModelBtn(true);
+                if (res && res.success) {
+                    hideModelMsg();
+                    if (res.url && res.url !== "") {
+                        location.replace(res.url);
+                    } else {
+                        location.replace("/");
+                    }
+                } else {
+
+                    var msg = "Login Failed!";
+                    if (res && res.msg) {
+                        msg = res.msg;
+                    }
+                    setMsg("Error", msg);
+                    changeValid();
+                }
+            }, error: function (res) {
+                setModelBtn(true);
+                var msg = "Login Failed!";
+                if (res && res.msg) {
+                    msg = res.msg;
+                }
+                setMsg("Error", msg);
+                changeValid();
+            }
+        });
+
+
+        return false;
+    }
+
+
+    function checkvalid() {
+        account = $("#login-wrap #inputAccount").val().trim();
+        nextmove = $("#login-wrap #inputNextMove").val().trim();
+        pwd = $("#login-wrap #inputPassword").val().trim();
+        validcode = $("#login-wrap #inputValid").val().trim();
+
+        if ($("#login-wrap #inputRemember").prop("checked")) {
+            remember = "Yes";
+        } else {
+            remember = "";
+        }
+        if (account == "" || pwd == "" || validcode == "") {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function showModelMsg(title, msg) {
+        $("#msgBox").modal({backdrop: false});
+        setModelBtn(false);
+        setMsg(title, msg);
+
+    }
+
+    function hideModelMsg() {
+        $("#msgBox").modal('hide');
+
+
+    }
+
+    function setMsg(title, msg) {
+        $("#msgBox #msgTitle").html(title);
+        $("#msgBox #msgBody").html(msg);
+    }
+
+    function setModelBtn(flag) {
+        $("#msgBox #btn-close").attr("disabled", !flag);
+
+    }
+
+    function form_focus() {
+
+        setTimeout(function () {
+            try {
+                d = $("#login-wrap #inputAccount");
+                d.focus();
+                d.select();
+            } catch (e) {
+            }
+        }, 200);
+    }
+
+    form_focus();
+
+   function formShake()
+   {
+       var id = "#login-form";
+       var p = new Array(15, 30, 15, 0, -15, -30, -15, 0);
+           p = p.concat(p.concat(p));
+        $(id).css("position", 'relative');
+        _shake(id, p, 12);
+   }
+    function _shake(id, a, d) {
+        c = a.shift();
+        console.log(c);
+        $(id).css("left", c + "px");
+        if (a.length > 0) {
+            setTimeout(function () {
+                _shake(id, a, d);
+            }, d);
+        } else {
+            try {
+                $(id).css("position", 'static');
+
+                form_focus();
+            } catch (e) {
+
+            }
+        }
+    }
+})();
+
+
+</script>
+{% end %}
+
+
+
+

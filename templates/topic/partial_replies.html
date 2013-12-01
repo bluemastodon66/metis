@@ -1,0 +1,51 @@
+{% if records %}
+<div class="reply-box">
+    {% for comment in records %}
+    <div class="replies">
+        <p class="author">
+            {% if comment.user %}
+            <a href="{{ webroot_url("topic/user/"+str(comment.user_id)) }}"><span
+                    class="glyphicon glyphicon-user"></span> </a> <a
+                href="{{ webroot_url("topic/user/"+str(comment.user_id)) }}"
+                class="username-coloured">{{ comment.author }}</a>
+            {% else %}
+            <span class="glyphicon glyphicon-user"></span> {{ comment.author }}
+            {% end %}
+            {% if comment.url %}
+            <a href="{{ comment.url }}" title="personal website"><span class="glyphicon glyphicon-tower"></span></a>
+            {% end %}
+
+            <span class="badge pull-right">{{ comment.date }}</span>
+        </p>
+        {% raw comment.content %}
+    </div>
+    {% end %}
+</div>
+
+{% if paginate %}
+<div class="page-box" id="reply-paginator">
+    <ul class="pagination pagination-sm">
+        {% for r in paginate %}
+        {% if r['current'] %}
+        <li class="active">
+            <a>{{ r['text'] }}</a>
+        </li>
+        {% else %}
+        {% if r['disable'] %}
+        <li class="disabled">
+            <a>{{ r['text'] }}</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{ webroot_url("topic/show/"+uid+"/?cs="+r['value']) }}">{{ r['text'] }}</a>
+        </li>
+        {% end %}
+
+        {% end %}
+
+        {% end %}
+    </ul>
+</div>
+{% end %}
+
+{% end %}

@@ -1,0 +1,102 @@
+{% extends "../admin_layout.html" %}
+
+{% block body %}
+
+<div class="page-header">
+    <h1>Web Settings</h1>
+</div>
+
+<div class="bs-callout bs-callout-info">
+    <h4>Description</h4>
+
+    <p>Save Update The options of this website</p>
+</div>
+
+<div class='panel panel-default'>
+    <div class="panel-heading panel-title">Settings</div>
+    <div class="panel-body">
+        <form id='request_form' role='form' method="POST" action="{{ webroot_url("admin/web_option/") }}">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class='form-group'>
+                        <label class='control-label' for='web_title'>Web Title</label>
+                        <input class='form-control' id='web_title' name='web_title' size='50' type='text'
+                               value='{{ '' if 'web_title' not in data else data['web_title']['value'] }}'/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class='form-group'>
+                        <label class='control-label' for='site_name'>Site Name</label>
+                        <input class='form-control' id='site_name' name='site_name' size='50' type='text'
+                               value='{{ '' if 'site_name' not in data else data['site_name']['value'] }}'/>
+                    </div>
+                </div>
+            </div>
+            <div class='form-group'>
+                <label class='control-label' for='description'>Description</label>
+                <textarea rows="4" class='form-control' id='description' name='description'>
+                    {% if 'description' in data %}{{ data['description']['value'] }}{% end %}</textarea>
+            </div>
+            <div class='form-group'>
+                <label class='control-label' for='admin_email'>Email</label>
+                <input class='form-control' id='admin_email' name='admin_email' size='300' type='text'
+                       value='{{ '' if 'admin_email' not in data else data['admin_email']['value'] }}'/>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class='form-group'>
+                        <label class='control-label' for='version'>Version</label>
+                        <input class='form-control' id='version' name='version' size='10' type='text'
+                               value='{{ '' if 'version' not in data else data['version']['value'] }}'/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="sep30"></div>
+                    <div class='form-group'>
+
+                        <label for='register'>Users Can Register?</label>
+                        <input id='register' name='users_can_register' type='checkbox'
+                                {% if 'users_can_register' in data %}
+                               {% if data['users_can_register']['value'] == '1' %}checked{% end %}
+                                {% end %}
+                                />
+                        <span class="sep10 block"></span>
+                        <label for='underM'>Under Maintenance?</label>
+                        <input id='underM' name='under_maintenance' type='checkbox'
+                                {% if 'under_maintenance' in data %}
+                               {% if data['under_maintenance']['value'] == '1' %}checked{% end %}
+                                {% end %}
+                                />
+                    </div>
+
+
+                </div>
+            </div>
+                    <div class='form-group'>
+                        <div>Thumb Picture Size ( W*H ) 0 means not limit, but W must be bigger then 50</div>
+                        <table><tr><td>
+
+                        <input style="width: 63px;" class='form-control' id='thumb_width' name='thumb_width' size='4' type='text' maxlength="4"
+                               value='{{ '50' if 'thumb_width' not in data else data['thumb_width']['value'] }}'/>
+                            </td><td>
+                       <div>X</div>
+                            </td><td>
+                        <input style="width: 63px;" class='form-control' id='thumb_height' name='thumb_height' size='4' type='text' maxlength="4"
+                               value='{{ '0' if 'thumb_height' not in data else data['thumb_height']['value'] }}'/>
+                           </td></tr> </table>
+                    </div>
+
+
+            <div class='form-actions'>
+                <input type='submit' class='btn btn-block btn-success' value='Update'/>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% end %}
+
+
+

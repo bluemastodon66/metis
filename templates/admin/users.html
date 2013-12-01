@@ -1,0 +1,175 @@
+{% extends "../admin_layout.html" %}
+
+{% block body %}
+
+<div class="page-header">
+    <h1>帳號管理</h1>
+</div>
+
+<div class="bs-callout bs-callout-info">
+    <h4>說明</h4>
+
+    <p>這裡是帳號管理，管理會員帳號。</p>
+    {% if act=="role" %}
+    <p>角色 {{ id }} 的帳號目前共有: <span style="color:#312cbc;">{{ totalAccount }}</span> 個帳號。</p>
+    <p><a href="{{ webroot_url("admin/users/") }}">查看全部帳號</a></p>
+    {% else %}
+    {% if keyword == "" %}
+    <p>目前共有: <a href="{{ webroot_url("admin/users/") }}"><span style="color:#bc0000;">{{ totalAccount }}</span></a> 個帳號。</p>
+    {% else %}
+    <p>查看關鍵字 <span style="color:#bc0000">{{ keyword }}</span> 目前共有: <span style="color:#bc0000;">{{ totalAccount }}</span> 個帳號。</p>
+    <p><a href="{{ webroot_url("admin/users/") }}">查看全部帳號</a></p>
+    {% end %}
+    {% end %}
+</div>
+
+<div class="accounts">
+    <div>
+        <div class="page-box">
+            <table>
+                <tr>
+                    <td>
+                        <ul class="pagination">
+
+                            {% for r in pages %}
+                            {% if r['current'] %}
+                            <li class="active">
+                                <a>{{ r['text'] }}</a>
+                            </li>
+                            {% else %}
+
+                            {% if r['disable'] %}
+                            <li class="disabled">
+                                <a>{{ r['text'] }}</a>
+                            </li>
+                            {% else %}
+
+                            <li>
+                                <a href="{{ webroot_url("admin/users/?s="+r['value']+"&"+parameters) }}">{{ r['text'] }}</a>
+                            </li>
+                            {% end %}
+
+                            {% end %}
+
+                            {% end %}
+                        </ul>
+                    </td>
+                    <td width="300" nowrap>
+
+                        <form class="navbar-form navbar-left" role="search" action="{{ webroot_url("admin/users/") }}">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search" name="k" value="{{ keyword }}">
+                            </div>
+                            <button type="submit" class="btn btn-default">Submit</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+<div class="btn-group">
+    <a href="{{ webroot_url("admin/users/add/") }}" id="add-btn" class="btn btn-success" role="button">Add Account</a>
+    <a id="enable-btn" class="btn btn-info" role="button">Enable Account</a>
+    <a id="disable-btn" class="btn btn-primary" role="button">Disable Account</a>
+    <a id="delete-btn" class="btn btn-danger" role="button">*Del Account</a>
+
+</div>
+<div class="sep20"></div>
+        <form id="update-form" action="{{ webroot_url("admin/users/") }}" method="POST">
+            <input name="action" value="" type="hidden"/>
+            <input name="nextmove" value="{{ parameters }}" type="hidden"/>
+
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">會員帳號<span class="badge pull-right">{{ totalAccount }}</span></div>
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th width="50"><input type="checkbox" id="select-all"/></th>
+                    <th>帳號</th>
+                    <th>名稱</th>
+                    <th width="200">電子郵件</th>
+                    <th width="80" style="text-align: center">角色</th>
+                    <th width="50" style="text-align: center">狀態</th>
+                    <th width="80" style="text-align: center">來自</th>
+                    <th width="100" style="text-align: center">註冊時間</th>
+                </tr>
+                </thead>
+                <tbody>
+
+
+                    {% for r in users %}
+
+
+
+                <tr>
+                    <td>
+                    <input type="checkbox" name="author_ids" value="{{ r['ID'] }}"/>
+                    </td>
+                    <td><a href="{{ webroot_url("admin/users/edit/?id="+str(r['ID'])) }}">{{ r['user_login'] }}</a></td>
+                    <td>{{ r['display_name'] }}</td>
+                    <td>{{ r['user_email'] }}</td>
+                    <td style="text-align: center"><a href="{{ webroot_url("admin/users/?act=role&id="+r['role']) }}">{{ r['role'] }}</a></td>
+                    <td style="text-align: center">{{ convert_status(r['user_status']) }}</td>
+                    <td style="text-align: center">{{ r['login_from'] }}</td>
+                    <td style="text-align: center">{{ r['user_registered'] }}</td>
+                </tr>
+
+                    {% end %}
+
+                </tbody>
+            </table>
+        </div>
+        </form>
+    </div>
+
+</div>
+
+
+{% end %}
+
+
+
+{% block scriptlist %}
+<script>
+(function () {
+// bind events //
+
+$action = $("#update-form input[name='action']");
+        $("#enable-btn").click(function(){
+            $action.val("enable");
+            $("#update-form").submit();
+        });
+        $("#disable-btn").click(function(){
+            $action.val("disable");
+            $("#update-form").submit();
+        });
+        $("#delete-btn").click(function(){
+            $action.val("delete");
+            $("#update-form").submit();
+        });
+
+        $("#select-all").click(function () {
+            $this=$(this);
+           if($this.prop("checked"))
+           {
+             $("input[name='author_ids']").each(function() {
+                 $(this).prop("checked", true);
+             });
+           }
+           else
+           {
+             $("input[name='author_ids']").each(function() {
+                 $(this).prop("checked", false);
+             });
+           }
+
+        });
+
+
+
+})();
+</script>
+{% end %}
