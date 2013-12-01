@@ -5,6 +5,10 @@ The System is purely simple and easy to add/modify as you want.
 
 Currently include some basic functions those are tag, category, search, image upload, wysiwyg editor, email verify.
 
+demo site: http://boost-engine.servehttp.com/demo/
+
+notice: please be gantle with my website :( I can only afford to rent the tiny instance level on amazon :)
+
 Last Updated On 2013.12.1
 # Extra Service
 Redis-Server
